@@ -2,9 +2,17 @@ import { BlogPostCard } from '@/components/native/BlogCard'
 import prisma from '@/lib/prisma'
 
 export default async function Index() {
-   const blogs = await prisma.blog.findMany({
-      include: { author: true },
-   })
+   let blogs = []
+
+   if (process.env.DATABASE_URL) {
+      try {
+         blogs = await prisma.blog.findMany({
+            include: { author: true },
+         })
+      } catch (error) {
+         console.error('Blog fetch failed during build:', error)
+      }
+   }
 
    return (
       <div className="flex flex-col border-neutral-200 dark:border-neutral-700">

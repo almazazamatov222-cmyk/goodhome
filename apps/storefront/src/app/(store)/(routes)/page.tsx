@@ -11,19 +11,29 @@ import prisma from '@/lib/prisma'
 import { isVariableValid } from '@/lib/utils'
 
 export default async function Index() {
-   const products = await prisma.product.findMany({
-      include: {
-         brand: true,
-         categories: true,
-      },
-   })
+   let products = []
+   let blogs = []
+   let banners = []
 
-   const blogs = await prisma.blog.findMany({
-      include: { author: true },
-      take: 3,
-   })
+   if (process.env.DATABASE_URL) {
+      try {
+         products = await prisma.product.findMany({
+            include: {
+               brand: true,
+               categories: true,
+            },
+         })
 
-   const banners = await prisma.banner.findMany()
+         blogs = await prisma.blog.findMany({
+            include: { author: true },
+            take: 3,
+         })
+
+         banners = await prisma.banner.findMany()
+      } catch (error) {
+         console.error('Database connection failed during build:', error)
+      }
+   }
 
    return (
       <div className="flex flex-col border-neutral-200 dark:border-neutral-700">
