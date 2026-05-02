@@ -3,13 +3,19 @@
    "version": "1.0.0",
    "scripts": {
       "prepare": "husky install",
-      "update": "npx npm-check-updates -u"
+      "update": "npx npm-check-updates -u",
+      "build:storefront": "cd apps/storefront && npm run build",
+      "build:admin": "cd apps/admin && npm run build",
+      "dev": "cd apps/storefront && npm run dev"
    },
    "author": {
-      "name": "Sesto",
-      "url": "https://github.com/sesto-dev"
+      "name": "GOOD HOME",
+      "url": "https://instagram.com/goodhomekz"
    },
    "license": "MIT",
+   "dependencies": {
+      "next": "^14.2.15"
+   },
    "devDependencies": {
       "@commitlint/cli": "^19.5.0",
       "@commitlint/config-conventional": "^19.5.0",
