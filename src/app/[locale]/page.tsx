@@ -1,7 +1,11 @@
 import { Button } from '@/components/ui/Button';
 import { FeatureCard } from '@/components/ui/FeatureCard';
+import {useTranslations} from 'next-intl';
 
 export default function Home() {
+  const t = useTranslations('Index');
+  const tNav = useTranslations('Navigation');
+
   return (
     <div className="min-h-screen bg-[var(--color-pure-white)] text-[var(--color-carbon-black)]">
       {/* Navbar Placeholder */}
@@ -9,13 +13,13 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="text-xl font-bold tracking-[var(--tracking-heading)] uppercase">GOOD HOME</div>
           <nav className="hidden md:flex gap-8">
-            <Button variant="ghost">Каталог</Button>
-            <Button variant="ghost">О нас</Button>
-            <Button variant="ghost">Контакты</Button>
+            <Button variant="ghost">{tNav('catalog')}</Button>
+            <Button variant="ghost">{tNav('about')}</Button>
+            <Button variant="ghost">{tNav('contact')}</Button>
           </nav>
           <div className="flex items-center gap-4">
             <span className="text-sm cursor-pointer hover:opacity-70 text-[var(--color-ash-gray)]">RU / KK / EN</span>
-            <Button variant="ghost">Войти</Button>
+            <Button variant="ghost">{tNav('login')}</Button>
           </div>
         </div>
       </header>
@@ -27,13 +31,13 @@ export default function Home() {
         
         <div className="relative z-10 max-w-3xl flex flex-col items-center">
           <h1 className="text-[var(--text-display)] leading-[var(--leading-display)] tracking-[var(--tracking-display)] text-[var(--color-barely-white)] mb-6 font-medium">
-            Искусство домашнего уюта
+            {t('title')}
           </h1>
           <p className="text-[var(--text-heading)] leading-[var(--leading-heading)] text-[var(--color-barely-white)]/80 mb-10 max-w-xl">
-            Эксклюзивный текстиль для вашего дома. Высочайшее качество и неповторимый стиль.
+            {t('description')}
           </p>
           <Button variant="primary">
-            Смотреть коллекцию
+            {t('cta')}
           </Button>
         </div>
       </section>
@@ -42,10 +46,10 @@ export default function Home() {
       <section className="py-[var(--spacing-80)] max-w-7xl mx-auto px-6">
         <div className="text-center mb-[var(--spacing-48)]">
           <h2 className="text-[var(--text-display)] leading-[var(--leading-display)] tracking-[var(--tracking-display)] mb-4">
-            Бестселлеры
+            {t('bestsellers')}
           </h2>
           <p className="text-[var(--color-ash-gray)] max-w-2xl mx-auto">
-            Ознакомьтесь с нашей коллекцией премиального постельного белья и текстиля, созданной для идеального комфорта.
+            {t('bestsellersDescription')}
           </p>
         </div>
 
@@ -79,7 +83,7 @@ export default function Home() {
         </div>
         
         <div className="mt-16 text-center">
-          <Button variant="ghost" className="border-b">Все товары</Button>
+          <Button variant="ghost" className="border-b">{t('allProducts')}</Button>
         </div>
       </section>
 
@@ -91,14 +95,14 @@ export default function Home() {
             <p className="text-sm opacity-70">Магазин премиального текстиля</p>
           </div>
           <div>
-            <h4 className="font-bold mb-4">Навигация</h4>
+            <h4 className="font-bold mb-4">{tNav('catalog')}</h4>
             <div className="flex flex-col gap-2">
-              <Button variant="text-link" className="w-fit">Каталог</Button>
-              <Button variant="text-link" className="w-fit">О нас</Button>
+              <Button variant="text-link" className="w-fit">{tNav('catalog')}</Button>
+              <Button variant="text-link" className="w-fit">{tNav('about')}</Button>
             </div>
           </div>
           <div>
-            <h4 className="font-bold mb-4">Контакты</h4>
+            <h4 className="font-bold mb-4">{tNav('contact')}</h4>
             <p className="text-sm opacity-70 mb-2">+7 (777) 123-45-67</p>
             <p className="text-sm opacity-70">info@goodhome.kz</p>
           </div>
