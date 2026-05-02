@@ -8,6 +8,8 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair' })
 
+export const dynamic = 'force-dynamic'
+
 export const metadata = {
    title: 'GOOD HOME - Premium Textiles & Decor',
    description: 'Discover the finest collection of bedding, towels, and homewear at GOOD HOME.',
