@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/Button';
 import { FeatureCard } from '@/components/ui/FeatureCard';
+import { Header } from '@/components/layout/Header';
 import {useTranslations} from 'next-intl';
 
 export default function Home() {
@@ -8,21 +9,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[var(--color-pure-white)] text-[var(--color-carbon-black)]">
-      {/* Navbar Placeholder */}
-      <header className="sticky top-0 z-50 w-full bg-[var(--color-pure-white)]/80 backdrop-blur-md border-b border-[var(--color-pale-silver)]">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="text-xl font-bold tracking-[var(--tracking-heading)] uppercase">GOOD HOME</div>
-          <nav className="hidden md:flex gap-8">
-            <Button variant="ghost">{tNav('catalog')}</Button>
-            <Button variant="ghost">{tNav('about')}</Button>
-            <Button variant="ghost">{tNav('contact')}</Button>
-          </nav>
-          <div className="flex items-center gap-4">
-            <span className="text-sm cursor-pointer hover:opacity-70 text-[var(--color-ash-gray)]">RU / KK / EN</span>
-            <Button variant="ghost">{tNav('login')}</Button>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       {/* Hero Section */}
       <section className="relative w-full h-[80vh] bg-[var(--color-midnight-indigo)] flex flex-col justify-center items-center text-center px-4">
