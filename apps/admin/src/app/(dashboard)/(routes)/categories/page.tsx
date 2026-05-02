@@ -7,12 +7,33 @@ import Link from 'next/link'
 
 import { CategoriesClient, CategoryColumn } from './components/table'
 
+export const dynamic = 'force-dynamic'
+
 export default async function CategoriesPage() {
-   const categories = await prisma.category.findMany({
-      include: {
-         products: true,
-      },
-   })
+   if (!process.env.DATABASE_URL) {
+      return (
+         <div className="my-6 block space-y-4">
+            <div className="flex items-center justify-between">
+               <Heading title="Categories (0)" description="Database not connected" />
+            </div>
+            <Separator />
+            <div className="p-4 bg-yellow-50 text-yellow-700 rounded-md">
+               Please connect DATABASE_URL to see your categories.
+            </div>
+         </div>
+      );
+   }
+
+   let categories: any[] = []
+   try {
+      categories = await prisma.category.findMany({
+         include: {
+            products: true,
+         },
+      })
+   } catch (error) {
+      console.error("DB Error:", error)
+   }
 
    const formattedCategories: CategoryColumn[] = categories.map((category) => ({
       id: category.id,

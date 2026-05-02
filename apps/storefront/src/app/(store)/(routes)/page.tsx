@@ -10,6 +10,8 @@ import { Separator } from '@/components/native/separator'
 import prisma from '@/lib/prisma'
 import { isVariableValid } from '@/lib/utils'
 
+export const dynamic = 'force-dynamic'
+
 export default async function Index() {
    let products = []
    let blogs = []

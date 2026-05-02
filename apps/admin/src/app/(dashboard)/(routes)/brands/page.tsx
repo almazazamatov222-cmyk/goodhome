@@ -7,12 +7,33 @@ import Link from 'next/link'
 
 import { BrandColumn, BrandsClient } from './components/table'
 
+export const dynamic = 'force-dynamic'
+
 export default async function BrandsPage() {
-   const brands = await prisma.brand.findMany({
-      include: {
-         products: true,
-      },
-   })
+   if (!process.env.DATABASE_URL) {
+      return (
+         <div className="my-6 block space-y-4">
+            <div className="flex items-center justify-between">
+               <Heading title="Brands (0)" description="Database not connected" />
+            </div>
+            <Separator />
+            <div className="p-4 bg-yellow-50 text-yellow-700 rounded-md">
+               Please connect DATABASE_URL to see your brands.
+            </div>
+         </div>
+      );
+   }
+
+   let brands: any[] = []
+   try {
+      brands = await prisma.brand.findMany({
+         include: {
+            products: true,
+         },
+      })
+   } catch (error) {
+      console.error("DB Error:", error)
+   }
 
    const formattedBrands: BrandColumn[] = brands.map((brand) => ({
       id: brand.id,

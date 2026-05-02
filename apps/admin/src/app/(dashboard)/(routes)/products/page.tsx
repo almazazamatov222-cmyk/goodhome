@@ -9,17 +9,38 @@ import Link from 'next/link'
 import { ProductsTable } from './components/table'
 import { ProductColumn } from './components/table'
 
+export const dynamic = 'force-dynamic'
+
 export default async function ProductsPage() {
-   const products = await prisma.product.findMany({
-      include: {
-         orders: true,
-         categories: true,
-         brand: true,
-      },
-      orderBy: {
-         createdAt: 'desc',
-      },
-   })
+   if (!process.env.DATABASE_URL) {
+      return (
+         <div className="block space-y-4 my-6">
+            <div className="flex items-center justify-between">
+               <Heading title="Products (0)" description="Database not connected" />
+            </div>
+            <Separator />
+            <div className="p-4 bg-yellow-50 text-yellow-700 rounded-md">
+               Please connect DATABASE_URL to see your products.
+            </div>
+         </div>
+      );
+   }
+
+   let products: any[] = []
+   try {
+      products = await prisma.product.findMany({
+         include: {
+            orders: true,
+            categories: true,
+            brand: true,
+         },
+         orderBy: {
+            createdAt: 'desc',
+         },
+      })
+   } catch (error) {
+      console.error("DB Error:", error)
+   }
 
    const formattedProducts: ProductColumn[] = products.map((product) => ({
       id: product.id,

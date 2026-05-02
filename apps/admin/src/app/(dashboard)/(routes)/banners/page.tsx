@@ -10,12 +10,33 @@ import { Heading } from '@/components/ui/heading'
 import { Separator } from '@/components/ui/separator'
 import Link from 'next/link'
 
+export const dynamic = 'force-dynamic'
+
 export default async function BannersPage() {
-   const banners = await prisma.banner.findMany({
-      orderBy: {
-         createdAt: 'desc',
-      },
-   })
+   if (!process.env.DATABASE_URL) {
+      return (
+         <div className="block space-y-4 my-6">
+            <div className="flex items-center justify-between">
+               <Heading title="Banners (0)" description="Database not connected" />
+            </div>
+            <Separator />
+            <div className="p-4 bg-yellow-50 text-yellow-700 rounded-md">
+               Please connect DATABASE_URL to see your banners.
+            </div>
+         </div>
+      );
+   }
+
+   let banners: any[] = []
+   try {
+      banners = await prisma.banner.findMany({
+         orderBy: {
+            createdAt: 'desc',
+         },
+      })
+   } catch (error) {
+      console.error("DB Error:", error)
+   }
 
    const formattedBanners: BannersColumn[] = banners.map((item) => ({
       id: item.id,

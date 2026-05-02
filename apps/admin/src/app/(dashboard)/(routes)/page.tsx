@@ -9,11 +9,37 @@ import { Separator } from '@/components/ui/separator'
 import { formatter } from '@/lib/utils'
 import { CreditCard, DollarSign, Package } from 'lucide-react'
 
+export const dynamic = 'force-dynamic'
+
 export default async function DashboardPage() {
-   const totalRevenue = await getTotalRevenue()
-   const graphRevenue = await getGraphRevenue()
-   const salesCount = await getSalesCount()
-   const stockCount = await getStockCount()
+   // Safety check for build time
+   if (!process.env.DATABASE_URL) {
+      return (
+         <div className="flex-col">
+            <div className="flex-1 space-y-4 pt-4">
+               <Heading title="Dashboard" description="Overview of your store (Database not connected)" />
+               <Separator />
+               <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-md text-yellow-700">
+                  Please connect DATABASE_URL in Vercel settings to see your dashboard data.
+               </div>
+            </div>
+         </div>
+      );
+   }
+
+   let totalRevenue = 0
+   let graphRevenue: any[] = []
+   let salesCount = 0
+   let stockCount = 0
+
+   try {
+      totalRevenue = await getTotalRevenue()
+      graphRevenue = await getGraphRevenue()
+      salesCount = await getSalesCount()
+      stockCount = await getStockCount()
+   } catch (error) {
+      console.error("Database connection error during build:", error);
+   }
 
    return (
       <div className="flex-col">
