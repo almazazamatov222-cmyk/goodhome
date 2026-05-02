@@ -45,13 +45,16 @@ export default async function Index() {
             title="Products"
             description="Below is a list of products we have available for you."
          />
-         {isVariableValid(products) ? (
+         {products.length > 0 ? (
             <ProductGrid products={products} />
          ) : (
-            <ProductSkeletonGrid />
+            <div className="flex flex-col items-center justify-center py-20 text-neutral-400">
+               <p className="text-lg">Товары еще не добавлены в админке.</p>
+               <ProductSkeletonGrid />
+            </div>
          )}
          <Separator className="my-8" />
-         {isVariableValid(blogs) ? (
+         {blogs.length > 0 ? (
             <BlogPostGrid blogs={blogs} />
          ) : (
             <BlogPostSkeletonGrid />

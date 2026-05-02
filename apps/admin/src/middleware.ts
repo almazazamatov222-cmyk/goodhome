@@ -21,9 +21,10 @@ export async function middleware(req: NextRequest) {
       return token
    }
 
+   const secretKey = process.env.JWT_SECRET_KEY || 'good-home-secret-key-fallback-2026'
+
    if (!process.env.JWT_SECRET_KEY) {
-      console.error('JWT secret key is missing')
-      return getErrorResponse(500, 'Internal Server Error')
+      console.warn('JWT_SECRET_KEY is missing, using fallback. Please set it in Vercel settings.')
    }
 
    const token = getToken()

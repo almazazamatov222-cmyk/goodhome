@@ -4,10 +4,17 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { cn, isVariableValid } from '@/lib/utils'
-import { isEmailValid, isIranianPhoneNumberValid } from '@persepolis/regex'
+import { isEmailValid } from '@persepolis/regex'
 import { Loader, MailIcon, SmartphoneIcon } from 'lucide-react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import * as React from 'react'
+
+// Simple regex for +7 phone numbers
+const isPhoneValid = (phone: string) => {
+   if (!phone) return false
+   const cleanPhone = phone.replace(/\D/g, '')
+   return cleanPhone.length === 11 && (cleanPhone.startsWith('7') || cleanPhone.startsWith('8'))
+}
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -29,60 +36,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
                setFetchedOTP={setFetchedOTP}
             />
          )}
-         <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-               <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-               <span className="bg-background px-2 text-muted-foreground">
-                  Or continue with
-               </span>
-            </div>
-         </div>
-         <ChangeMethodButton isLoading={isLoading} />
       </div>
-   )
-}
-
-function ChangeMethodButton({ isLoading }) {
-   const router = useRouter()
-   const pathname = usePathname()
-   const searchParams = useSearchParams()
-   const method = searchParams.get('method')
-
-   function changeMethod() {
-      const params = new URLSearchParams(Array.from(searchParams.entries()))
-
-      params.set('method', method == 'phone' ? 'email' : 'phone')
-      const search = params.toString()
-      const query = search ? `?${search}` : ''
-
-      router.replace(`${pathname}${query}`, {
-         scroll: false,
-      })
-   }
-
-   if (method === 'phone')
-      return (
-         <Button onClick={changeMethod} disabled={isLoading} type="button">
-            {isLoading ? (
-               <Loader className="mr-2 h-4 animate-spin" />
-            ) : (
-               <MailIcon className="mr-2 h-4" />
-            )}
-            Email
-         </Button>
-      )
-
-   return (
-      <Button onClick={changeMethod} disabled={isLoading} type="button">
-         {isLoading ? (
-            <Loader className="mr-2 h-4 animate-spin" />
-         ) : (
-            <SmartphoneIcon className="mr-2 h-4" />
-         )}
-         Phone Number
-      </Button>
    )
 }
 
@@ -90,211 +44,194 @@ function TryComponents({ isLoading, setIsLoading, setFetchedOTP }) {
    const router = useRouter()
    const pathname = usePathname()
    const searchParams = useSearchParams()
-   const method = searchParams.get('method')
+   
+   // Default to phone if no method specified
+   const method = searchParams.get('method') || 'phone'
    const email = searchParams.get('email')
-   const phone = searchParams.get('phone')
+   const phone = searchParams.get('phone') || '+7'
 
    const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       const params = new URLSearchParams(Array.from(searchParams.entries()))
-
       params.set('email', event.target.value)
-      const search = params.toString()
-      const query = search ? `?${search}` : ''
-
-      router.replace(`${pathname}${query}`, {
-         scroll: false,
-      })
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false })
    }
 
    const handlePhoneChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       const params = new URLSearchParams(Array.from(searchParams.entries()))
-
       params.set('phone', event.target.value)
-      const search = params.toString()
-      const query = search ? `?${search}` : ''
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false })
+   }
 
-      router.replace(`${pathname}${query}`, {
-         scroll: false,
-      })
+   const changeMethod = (newMethod: string) => {
+      const params = new URLSearchParams(Array.from(searchParams.entries()))
+      params.set('method', newMethod)
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false })
    }
 
    async function onSubmitEmail() {
       try {
          setIsLoading(true)
-
          const response = await fetch('/api/auth/otp/email/try', {
             method: 'POST',
             body: JSON.stringify({ email }),
             cache: 'no-store',
          })
-
-         if (response.ok) {
-            setFetchedOTP(true)
-         }
-
+         if (response.ok) setFetchedOTP(true)
          setIsLoading(false)
       } catch (error) {
          console.error({ error })
+         setIsLoading(false)
       }
    }
 
    async function onSubmitPhone() {
       try {
          setIsLoading(true)
-
          const response = await fetch('/api/auth/otp/phone/try', {
             method: 'POST',
             body: JSON.stringify({ phone }),
             cache: 'no-store',
          })
-
-         if (response.ok) {
-            setFetchedOTP(true)
-         }
-
+         if (response.ok) setFetchedOTP(true)
          setIsLoading(false)
       } catch (error) {
          console.error({ error })
+         setIsLoading(false)
       }
    }
 
    if (method === 'phone')
       return (
          <>
-            <div className="grid gap-1">
-               <Label
-                  className="text-sm font-light text-foreground/60"
-                  htmlFor="email"
-               >
-                  Phone
+            <div className="grid gap-2">
+               <Label className="text-sm font-medium text-neutral-700" htmlFor="phone">
+                  Номер телефона
                </Label>
                <Input
                   id="phone"
-                  placeholder="+989123456789"
-                  type="phone"
-                  autoCapitalize="none"
-                  autoComplete="phone"
-                  autoCorrect="off"
+                  placeholder="+7 (777) 000-00-00"
+                  type="tel"
+                  className="h-12 text-lg rounded-xl border-neutral-200 focus:border-orange-500"
+                  value={phone}
                   disabled={isLoading}
                   onChange={handlePhoneChange}
                   required
                />
-               {isVariableValid(phone) && !isIranianPhoneNumberValid(phone) && (
-                  <p className="mt-2 text-sm text-red-700">
-                     Phone Number is not valid.
+               {isVariableValid(phone) && phone.length > 2 && !isPhoneValid(phone) && (
+                  <p className="text-xs text-red-500">
+                     Введите корректный номер телефона (11 цифр)
                   </p>
                )}
             </div>
             <Button
+               className="bg-orange-500 hover:bg-orange-600 text-white h-12 rounded-xl text-lg font-bold"
                onClick={onSubmitPhone}
-               disabled={isLoading || !isIranianPhoneNumberValid(phone)}
+               disabled={isLoading || !isPhoneValid(phone)}
             >
                {isLoading && <Loader className="mr-2 h-4 animate-spin" />}
-               Login with Phone
+               Получить SMS-код
             </Button>
+            <button 
+               type="button"
+               onClick={() => changeMethod('email')}
+               className="text-sm text-neutral-500 hover:text-orange-500 transition"
+            >
+               Войти по Email
+            </button>
          </>
       )
 
    return (
       <>
-         <div className="grid gap-1">
-            <Label
-               className="text-sm font-light text-foreground/60"
-               htmlFor="email"
-            >
+         <div className="grid gap-2">
+            <Label className="text-sm font-medium text-neutral-700" htmlFor="email">
                Email
             </Label>
             <Input
                id="email"
                placeholder="name@example.com"
                type="email"
-               autoCapitalize="none"
-               autoComplete="email"
-               autoCorrect="off"
+               className="h-12 rounded-xl border-neutral-200 focus:border-orange-500"
                disabled={isLoading}
                onChange={handleEmailChange}
                required
             />
          </div>
          <Button
+            className="bg-orange-500 hover:bg-orange-600 text-white h-12 rounded-xl text-lg font-bold"
             onClick={onSubmitEmail}
             disabled={isLoading || !isEmailValid(email)}
          >
             {isLoading && <Loader className="mr-2 h-4 animate-spin" />}
-            Login with Email
+            Продолжить
          </Button>
+         <button 
+            type="button"
+            onClick={() => changeMethod('phone')}
+            className="text-sm text-neutral-500 hover:text-orange-500 transition"
+         >
+            Войти по номеру телефона
+         </button>
       </>
    )
 }
 
 function VerifyComponents({ isLoading, setIsLoading }) {
    const router = useRouter()
-   const pathname = usePathname()
    const searchParams = useSearchParams()
-   const method = searchParams.get('method')
+   const method = searchParams.get('method') || 'phone'
    const email = searchParams.get('email')
    const phone = searchParams.get('phone')
-   const OTP = searchParams.get('OTP')
-
-   const handleOTPChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      const params = new URLSearchParams(Array.from(searchParams.entries()))
-
-      params.set('OTP', event.target.value)
-      const search = params.toString()
-      const query = search ? `?${search}` : ''
-
-      router.replace(`${pathname}${query}`, {
-         scroll: false,
-      })
-   }
+   const [otp, setOtp] = React.useState('')
 
    async function onVerifyOTP() {
       try {
          setIsLoading(true)
-
          const response = await fetch(
             method === 'phone'
                ? '/api/auth/otp/phone/verify'
                : '/api/auth/otp/email/verify',
             {
                method: 'POST',
-               body: JSON.stringify({
-                  email,
-                  phone,
-                  OTP,
-               }),
+               body: JSON.stringify({ email, phone, OTP: otp }),
                cache: 'no-store',
             }
          )
-
          if (response.ok) {
             window.location.assign(`/`)
          }
+         setIsLoading(false)
       } catch (error) {
          console.error({ error })
+         setIsLoading(false)
       }
    }
 
    return (
       <>
-         <div className="grid gap-1">
-            <Label
-               className="text-sm font-light text-foreground/60"
-               htmlFor="email"
-            >
-               One-Time Password
+         <div className="grid gap-2">
+            <Label className="text-sm font-medium text-neutral-700" htmlFor="otp">
+               Код из SMS
             </Label>
             <Input
-               placeholder="12345"
+               id="otp"
+               placeholder="0000"
+               className="h-12 text-center text-2xl tracking-[1em] rounded-xl border-neutral-200 focus:border-orange-500"
+               maxLength={4}
                disabled={isLoading}
-               onChange={handleOTPChange}
+               onChange={(e) => setOtp(e.target.value)}
                required
             />
          </div>
-         <Button onClick={onVerifyOTP} disabled={isLoading}>
+         <Button 
+            className="bg-orange-500 hover:bg-orange-600 text-white h-12 rounded-xl text-lg font-bold"
+            onClick={onVerifyOTP} 
+            disabled={isLoading || otp.length < 4}
+         >
             {isLoading && <Loader className="mr-2 h-4 animate-spin" />}
-            Submit
+            Подтвердить
          </Button>
       </>
    )
 }
+
