@@ -77,8 +77,12 @@ export default function Header() {
 
             {/* Actions */}
             <div className="flex items-center gap-1">
-               <NavIcon icon={<Heart size={22} />} label="Избранное" />
-               <NavIcon icon={<BarChart2 size={22} className="rotate-90" />} label="Сравнить" />
+               <Link href="/favorites">
+                  <NavIcon icon={<Heart size={22} />} label="Избранное" />
+               </Link>
+               <Link href="/compare">
+                  <NavIcon icon={<BarChart2 size={22} className="rotate-90" />} label="Сравнить" />
+               </Link>
                <Link href="/cart">
                   <NavIcon icon={<ShoppingBasketIcon size={22} />} label="Корзина" />
                </Link>
@@ -94,13 +98,13 @@ export default function Header() {
 
          {/* Bottom bar - Categories */}
          <div className="flex items-center gap-6 py-3 px-[1.4rem] md:px-[4rem] lg:px-[6rem] xl:px-[8rem] 2xl:px-[12rem] text-sm font-medium overflow-x-auto no-scrollbar whitespace-nowrap">
-            <span className="text-orange-500 cursor-pointer flex items-center gap-1"><span className="text-lg">🔥</span> Акции</span>
-            <span className="hover:text-orange-500 cursor-pointer transition">Текстиль</span>
-            <span className="hover:text-orange-500 cursor-pointer transition">Постельное белье</span>
-            <span className="hover:text-orange-500 cursor-pointer transition">Для кухни</span>
-            <span className="hover:text-orange-500 cursor-pointer transition">Декор</span>
-            <span className="hover:text-orange-500 cursor-pointer transition">Подарки</span>
-            <span className="hover:text-orange-500 cursor-pointer transition">Скидки</span>
+            <Link href="/promo" className="text-orange-500 cursor-pointer flex items-center gap-1"><span className="text-lg">🔥</span> Акции</Link>
+            <Link href="/categories/textile" className="hover:text-orange-500 cursor-pointer transition">Текстиль</Link>
+            <Link href="/categories/bedding" className="hover:text-orange-500 cursor-pointer transition">Постельное белье</Link>
+            <Link href="/categories/kitchen" className="hover:text-orange-500 cursor-pointer transition">Для кухни</Link>
+            <Link href="/categories/decor" className="hover:text-orange-500 cursor-pointer transition">Декор</Link>
+            <Link href="/categories/gifts" className="hover:text-orange-500 cursor-pointer transition">Подарки</Link>
+            <Link href="/categories/sales" className="hover:text-orange-500 cursor-pointer transition">Скидки</Link>
          </div>
       </header>
    )
