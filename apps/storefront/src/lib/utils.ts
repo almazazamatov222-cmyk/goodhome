@@ -17,7 +17,10 @@ export function formatDate(input: string | number): string {
 }
 
 export function absoluteUrl(path: string) {
-   return `${process.env.NEXT_PUBLIC_APP_URL}${path}`
+   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 
+                   process.env.NEXT_PUBLIC_URL || 
+                   (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:7777");
+   return `${baseUrl}${path}`
 }
 
 export function isVariableValid(variable) {

@@ -1,8 +1,8 @@
 'use client'
 
 import { CommandMenu } from '@/components/composites/command'
-import { MobileNav } from '@/components/native//nav/mobile'
-import { UserNav } from '@/components/native//nav/user'
+import { MobileNav } from '@/components/native/nav/mobile'
+import { UserNav } from '@/components/native/nav/user'
 import { MainNav } from '@/components/native/nav/desktop'
 import { Button } from '@/components/ui/button'
 import { useAuthenticated } from '@/hooks/useAuthentication'
