@@ -1,5 +1,7 @@
+'use client';
+
 import React from 'react';
-import Image from 'next/image';
+import { motion } from 'framer-motion';
 
 interface FeatureCardProps {
   imageSrc: string;
@@ -7,35 +9,48 @@ interface FeatureCardProps {
   title: string;
   price?: string;
   isNew?: boolean;
+  delay?: number;
+  className?: string;
 }
 
-export function FeatureCard({ imageSrc, imageAlt, title, price, isNew }: FeatureCardProps) {
+export function FeatureCard({ imageSrc, imageAlt, title, price, isNew, delay = 0, className = '' }: FeatureCardProps) {
   return (
-    <div className="bg-transparent group relative w-full flex flex-col gap-[var(--element-gap)] cursor-pointer">
-      <div className="relative w-full aspect-square bg-gray-50 flex items-center justify-center overflow-hidden">
-        {/* Mock image placeholder if real one not provided, else next/image */}
+    <motion.div 
+      initial={{ opacity: 0, y: 50 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-100px" }}
+      transition={{ duration: 0.8, delay, ease: [0.16, 1, 0.3, 1] }}
+      className={`bg-transparent group relative w-full flex flex-col cursor-pointer ${className}`}
+    >
+      <div className="relative w-full aspect-[4/5] bg-[#f5f5f5] flex items-center justify-center overflow-hidden">
         {imageSrc ? (
-          <img src={imageSrc} alt={imageAlt} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+          <motion.img 
+            whileHover={{ scale: 1.05 }}
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+            src={imageSrc} 
+            alt={imageAlt} 
+            className="w-full h-full object-cover" 
+          />
         ) : (
-          <div className="w-full h-full bg-gray-200"></div>
+          <div className="w-full h-full bg-[#f5f5f5]"></div>
         )}
         
         {isNew && (
-          <div className="absolute top-4 left-4 bg-[var(--color-pure-white)] text-[var(--color-carbon-black)] rounded-[var(--radius-badges)] px-2 py-1 text-xs font-bold uppercase z-10">
-            New
+          <div className="absolute top-6 left-6 text-[var(--color-carbon-black)] text-[10px] tracking-[0.2em] uppercase font-bold z-10">
+            Новинка
           </div>
         )}
       </div>
-      <div className="mt-4 text-center">
-        <h3 className="text-[var(--text-heading)] leading-[var(--leading-heading)] tracking-[var(--tracking-heading)] text-[var(--color-carbon-black)] font-medium">
+      <div className="mt-8 flex justify-between items-start">
+        <h3 className="text-[18px] md:text-[24px] tracking-[-0.01em] text-[var(--color-carbon-black)] font-medium leading-tight">
           {title}
         </h3>
         {price && (
-          <p className="text-[var(--text-body)] text-[var(--color-ash-gray)] mt-1">
+          <p className="text-[16px] text-[var(--color-ash-gray)] font-light mt-1">
             {price}
           </p>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }
